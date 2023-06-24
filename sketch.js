@@ -113,11 +113,11 @@ function isPullUpDone() {
 
         // 计算头部在两手连线上的y坐标
         const headYOnLine = slope * head.x + intercept;
-        console.log(head.y, headYOnLine)
+        // console.log(head.y, headYOnLine)
 
         // 判断头部是否在两手连线上方且距离两手连线的距离大于0
         if (head.y < headYOnLine) {
-            console.log('+++++++++++', head.y, headYOnLine)
+            // console.log('+++++++++++', head.y, headYOnLine)
             return true; // 引体向上完成
         }
     }
