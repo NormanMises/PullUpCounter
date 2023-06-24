@@ -16,6 +16,10 @@ function setup() {
         createCanvas(windowWidth, windowHeight);
         video.hide();
 
+        const windowSizeText = createP();
+        windowSizeText.position(10, 10); // 设置元素的位置
+        windowSizeText.style('color', 'red'); // 设置文字颜色为白色
+
         poseNet = ml5.poseNet(video, modelLoad);
         poseNet.on('pose', gotPoses);
     });
@@ -36,6 +40,10 @@ function modelLoad() {
 }
 
 function draw() {
+    // 更新窗口的宽度和高度
+    windowSizeText.html(`Window Size: ${windowWidth} x ${windowHeight}`);
+
+
     // 将画布的坐标系移动到画布的右上角
     // translate(video.width, 0);
     // 沿着x轴翻转画布
