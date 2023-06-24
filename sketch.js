@@ -21,7 +21,8 @@ function setup() {
 }
 
 function gotPoses(poses) {
-    // console.log(poses);
+    console.log(poses);
+
     if (poses.length > 0) {
         pose = poses[0].pose;
         skeleton = poses[0].skeleton;
@@ -83,12 +84,12 @@ function drawSkeleton() {
 
 
 function drawLineBetweenHands() {
-    const leftHand = pose.leftWrist;
-    const rightHand = pose.rightWrist;
+    let leftHand = pose.leftWrist;
+    let rightHand = pose.rightWrist;
     if (leftHand.confidence > 0.5 && rightHand.confidence > 0.5) {
         stroke(255, 0, 0);
         strokeWeight(2);
-        line(leftHand.position.x, leftHand.position.y, rightHand.position.x, rightHand.position.y);
+        line(leftHand.x, leftHand.y, rightHand.x, rightHand.y);
     }
 }
 
