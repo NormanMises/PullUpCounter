@@ -6,7 +6,8 @@ let pullUpCounter = 0;
 let pullUpDone = false;
 
 function setup() {
-    video = createCapture({video: {facingMode: {exact: "environment"}}}, () => {
+    // environment
+    video = createCapture({video: {facingMode: {exact: "user"}}}, () => {
         // 在视频加载后获取视频的宽度和高度
         const videoWidth = video.width;
         const videoHeight = video.height;
@@ -14,7 +15,7 @@ function setup() {
         // 设置画布大小为视频的宽度和高度
         // createCanvas(videoWidth, videoHeight);
         createCanvas(windowWidth, windowHeight);
-        console.log(windowWidth, windowHeight);
+        console.log('+++++++',windowWidth, windowHeight);
         video.hide();
 
         poseNet = ml5.poseNet(video, modelLoad);
