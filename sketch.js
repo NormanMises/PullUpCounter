@@ -41,7 +41,20 @@ function draw() {
     // 沿着x轴翻转画布
     scale(-1, 1);
     // 在画布上绘制视频
-    image(video, 0, 0, video.width, video.height);
+    // image(video, 0, 0, video.width, video.height);
+
+    // 计算视频的缩放比例
+    const scaleFactor = min(width / video.width, height / video.height);
+
+    // 计算视频在画布中的位置和尺寸
+    const scaledWidth = video.width * scaleFactor;
+    const scaledHeight = video.height * scaleFactor;
+
+    const x = (width - scaledWidth) / 2;
+    const y = (height - scaledHeight) / 2;
+
+    // 在画布上绘制视频
+    image(video, x, y, scaledWidth, scaledHeight);
 
     // 如果检测到人体姿势
     if (pose) {
