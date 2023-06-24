@@ -4,10 +4,22 @@ let pose;
 let skeleton;
 let pullUpCounter = 0;
 let pullUpDone = false;
+let facingMode = "user"; // 默认使用前置摄像头
 
 function setup() {
+    // 创建切换摄像头按钮
+    const switchButton = createButton("Switch Camera");
+    switchButton.position(10, 10);
+    switchButton.mousePressed(switchCamera);
+
     // environment
-    video = createCapture({video: {facingMode: {exact: "user"}}}, () => {
+    // video = createCapture({video: {facingMode: {exact: "user"}}}, () => {
+    video = createCapture({
+        video: {
+            facingMode: facingMode
+        }
+
+    }, () => {
         // 在视频加载后获取视频的宽度和高度
         const videoWidth = video.width;
         const videoHeight = video.height;
@@ -15,14 +27,34 @@ function setup() {
         // 设置画布大小为视频的宽度和高度
         // createCanvas(videoWidth, videoHeight);
         createCanvas(windowWidth, windowHeight);
-        console.log('+++++++',windowWidth, windowHeight);
+        console.log('+++++++', windowWidth, windowHeight);
+        console.log('-------', videoWidth, videoHeight);
         video.hide();
 
-        poseNet = ml5.poseNet(video, modelLoad);
-        poseNet.on('pose', gotPoses);
+        // poseNet = ml5.poseNet(video, modelLoad);
+        // poseNet.on('pose', gotPoses);
     });
 }
 
+// 切换前后摄像头
+function switchCamera() {
+    if (facingMode === "user") {
+        facingMode = "environment";
+    } else {
+        facingMode = "user";
+    }
+
+    // 重新加载视频捕获
+    video = createCapture({
+        video: {
+            facingMode: facingMode
+        }
+    }, () => {
+        video.hide();
+        // poseNet = ml5.poseNet(video, modelLoad);
+        // poseNet.on("pose", gotPoses);
+    });
+}
 
 function gotPoses(poses) {
     // console.log(poses);
