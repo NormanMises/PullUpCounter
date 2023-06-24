@@ -7,13 +7,6 @@ let pullUpDone = false;
 let facingMode = "user"; // 默认使用前置摄像头
 
 function setup() {
-    // 创建切换摄像头按钮
-    const switchButton = createButton("Switch Camera");
-    switchButton.position(10, 10);
-    switchButton.mousePressed(switchCamera);
-
-    // environment
-    // video = createCapture({video: {facingMode: {exact: "user"}}}, () => {
     video = createCapture({
         video: {
             facingMode: facingMode
@@ -25,8 +18,8 @@ function setup() {
         const videoHeight = video.height;
 
         // 设置画布大小为视频的宽度和高度
-        // createCanvas(videoWidth, videoHeight);
-        createCanvas(windowWidth, windowHeight);
+        createCanvas(videoWidth, videoHeight);
+        // createCanvas(windowWidth, windowHeight);
         console.log('+++++++', windowWidth, windowHeight);
         console.log('-------', videoWidth, videoHeight);
         video.hide();
@@ -34,6 +27,11 @@ function setup() {
         // poseNet = ml5.poseNet(video, modelLoad);
         // poseNet.on('pose', gotPoses);
     });
+
+    // 创建切换摄像头按钮
+    const switchButton = createButton("Switch Camera");
+    switchButton.position(10, video.height);
+    switchButton.mousePressed(switchCamera);
 }
 
 // 切换前后摄像头
@@ -51,14 +49,14 @@ function switchCamera() {
         }
     }, () => {
         video.hide();
-        // poseNet = ml5.poseNet(video, modelLoad);
-        // poseNet.on("pose", gotPoses);
+
+        poseNet = ml5.poseNet(video, modelLoad);
+        poseNet.on("pose", gotPoses);
     });
 }
 
 function gotPoses(poses) {
     // console.log(poses);
-
     if (poses.length > 0) {
         pose = poses[0].pose;
         skeleton = poses[0].skeleton;
@@ -67,6 +65,7 @@ function gotPoses(poses) {
 
 function modelLoad() {
     console.log('poseNet ready')
+    document.querySelector('#status').innerHTML = '模型加载成功！';
 }
 
 function draw() {
@@ -77,24 +76,32 @@ function draw() {
     // 在画布上绘制视频
     // image(video, 0, 0, video.width, video.height);
 
-    // 计算视频的缩放比例
-    const scaleFactor = min(width / video.width, height / video.height);
 
-    // 计算视频在画布中的位置和尺寸
-    const scaledWidth = video.width * scaleFactor;
-    const scaledHeight = video.height * scaleFactor;
+    // 在画布的上居中位置绘制视频
+    // image(video, (width - video.width) / 2, 0);
+    image(video, 0, 0);
 
-    const x = (width - scaledWidth) / 2;
-    const y = (height - scaledHeight) / 2;
 
-    // 在画布上绘制视频
-    image(video, x, y, scaledWidth, scaledHeight);
+
+
+    // // 计算视频的缩放比例
+    // const scaleFactor = min(width / video.width, height / video.height);
+
+    // // 计算视频在画布中的位置和尺寸
+    // const scaledWidth = video.width * scaleFactor;
+    // const scaledHeight = video.height * scaleFactor;
+
+    // const x = (width - scaledWidth) / 2;
+    // const y = (height - scaledHeight) / 2;
+
+    // // 在画布上绘制视频
+    // image(video, x, y, scaledWidth, scaledHeight);
 
     // 如果检测到人体姿势
     if (pose) {
         // 计算左右肩之间的距离
         let distance = calculateDistance(pose.keypoints[5], pose.keypoints[6]);
-        distance = min(distance, 32);
+        distance = min(distance, 16);
         // console.log(distance);
 
         // 绘制关键点
@@ -111,7 +118,7 @@ function drawKeypoints(distance) {
     for (let j = 0; j < pose.keypoints.length; j++) {
         let keypoint = pose.keypoints[j];
         // Only draw an ellipse is the pose probability is bigger than 0.2
-        if (keypoint.score > 0.2) {
+        if (keypoint.score > 0.5) {
             fill(255, 0, 0);
             noStroke();
             ellipse(keypoint.position.x, keypoint.position.y, distance);
@@ -123,8 +130,8 @@ function drawSkeleton() {
     for (let j = 0; j < skeleton.length; j++) {
         let partA = skeleton[j][0];
         let partB = skeleton[j][1];
-        stroke(0, 255, 0);
-        strokeWeight(2);
+        stroke(0, 0, 255);
+        strokeWeight(5);
         line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
     }
 }
@@ -181,10 +188,10 @@ function updatePullUpCounter() {
     } else if (!isPullUpDone()) {
         pullUpDone = false;
     }
-    textSize(32);
+    textSize(30);
     fill(255, 0, 0);
     // 将画布的坐标系恢复到正常状态
     // scale(-1, 1);
     // text("Pull Ups: " + pullUpCounter, -video.width + 10, 30);
-    text("Pull Ups: " + pullUpCounter, 10, 30);
+    text("Pull Ups: " + pullUpCounter, 0, 30);
 }
