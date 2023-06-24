@@ -151,5 +151,6 @@ function updatePullUpCounter() {
     fill(255, 0, 0);
     // 将画布的坐标系恢复到正常状态
     // scale(-1, 1);
-    text("Pull Ups: " + pullUpCounter, -video.width + 10, 30);
+    // text("Pull Ups: " + pullUpCounter, -video.width + 10, 30);
+    text("Pull Ups: " + pullUpCounter, 10, 30);
 }
