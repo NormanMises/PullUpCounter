@@ -37,9 +37,9 @@ function modelLoad() {
 
 function draw() {
     // 将画布的坐标系移动到画布的右上角
-    translate(video.width, 0);
+    // translate(video.width, 0);
     // 沿着x轴翻转画布
-    scale(-1, 1);
+    // scale(-1, 1);
     // 在画布上绘制视频
     // image(video, 0, 0, video.width, video.height);
 
@@ -150,6 +150,6 @@ function updatePullUpCounter() {
     textSize(32);
     fill(255, 0, 0);
     // 将画布的坐标系恢复到正常状态
-    scale(-1, 1);
+    // scale(-1, 1);
     text("Pull Ups: " + pullUpCounter, -video.width + 10, 30);
 }
