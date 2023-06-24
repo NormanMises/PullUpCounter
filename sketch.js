@@ -6,19 +6,21 @@ let pullUpCounter = 0;
 let pullUpDone = false;
 
 function setup() {
-    video = createCapture(VIDEO, () => {
+    video = createCapture({video: {facingMode: {exact: "environment"}}}, () => {
         // 在视频加载后获取视频的宽度和高度
         const videoWidth = video.width;
         const videoHeight = video.height;
 
         // 设置画布大小为视频的宽度和高度
-        createCanvas(videoWidth, videoHeight);
+        // createCanvas(videoWidth, videoHeight);
+        createCanvas(windowWidth, windowHeight);
         video.hide();
 
         poseNet = ml5.poseNet(video, modelLoad);
         poseNet.on('pose', gotPoses);
     });
 }
+
 
 function gotPoses(poses) {
     console.log(poses);
@@ -56,8 +58,6 @@ function draw() {
         // 更新引体向上计数器
         updatePullUpCounter();
     }
-
-
 }
 
 function drawKeypoints(distance) {
