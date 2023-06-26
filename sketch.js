@@ -48,8 +48,14 @@ function setup() {
 
     stopButton = createButton("Save this training");
     stopButton.position(10, video.height + 100);
-    stopButton.mousePressed(sendData({ pullUpCounter: pullUpCounter }));
-
+    stopButton.mousePressed(() => {
+        // 创建一个包含pullUpCounter的数据对象
+        const data = {
+            pullUpCounter: pullUpCounter
+        };
+        // 调用sendData函数发送数据到后端
+        sendData(data);
+    });
 }
 
 function modelLoad() {
@@ -107,30 +113,30 @@ function stopCounting() {
 }
 
 // 将数据作为JSON发送到后端
-function sendData(pullUpCounter) {
-        // 创建一个XMLHttpRequest对象
-        const xhr = new XMLHttpRequest();
+function sendData(data) {
+    // 创建一个XMLHttpRequest对象
+    const xhr = new XMLHttpRequest();
 
-        // 设置请求方法和URL
-        xhr.open("POST", "/backend-endpoint");
+    // 设置请求方法和URL
+    xhr.open("POST", "/backend-endpoint");
 
-        // 设置请求头（根据需要进行设置）
-        xhr.setRequestHeader("Content-Type", "application/json");
+    // 设置请求头（根据需要进行设置）
+    xhr.setRequestHeader("Content-Type", "application/json");
 
-        // 监听响应状态变化
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200) {
-                    // 请求成功
-                    console.log(xhr.responseText);
-                } else {
-                    // 请求失败
-                    console.error("Error:", xhr.status);
-                }
+    // 监听响应状态变化
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                // 请求成功
+                console.log(xhr.responseText);
+            } else {
+                // 请求失败
+                console.error("Error:", xhr.status);
             }
-        };
-        // 将数据转换为JSON字符串并发送
-        xhr.send(JSON.stringify(pullUpCounter));
+        }
+    };
+    // 将数据转换为JSON字符串并发送
+    xhr.send(JSON.stringify(data));
 }
 
 function draw() {
