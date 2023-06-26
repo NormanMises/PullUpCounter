@@ -49,6 +49,7 @@ function setup() {
     stopButton = createButton("Save this training");
     stopButton.position(10, video.height + 100);
     stopButton.mousePressed(sendData);
+
 }
 
 function modelLoad() {
