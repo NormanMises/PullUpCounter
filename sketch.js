@@ -5,6 +5,15 @@ let skeleton;
 let pullUpCounter = 0;
 let pullUpDone = false;
 let facingMode = "user"; // 默认使用前置摄像头
+let switchButton;
+// 添加开始计数按钮
+let startButton;
+// 添加停止计数按钮
+let stopButton;
+// 添加计时器
+let timer = 0;
+// 添加计时器是否开始的标志
+let timerStarted = false;
 
 function setup() {
     video = createCapture({
@@ -24,15 +33,26 @@ function setup() {
         console.log('-------', videoWidth, videoHeight);
         video.hide();
 
-        // poseNet = ml5.poseNet(video, modelLoad);
-        // poseNet.on('pose', gotPoses);
+        poseNet = ml5.poseNet(video, modelLoad);
+        poseNet.on('pose', gotPoses);
     });
 
     // 创建切换摄像头按钮
-    const switchButton = createButton("Switch Camera");
+    switchButton = createButton("Switch Camera");
     switchButton.position(10, video.height);
     switchButton.mousePressed(switchCamera);
+
+    // 创建开始计数按钮
+    startButton = createButton("Start Counting");
+    startButton.position(10, video.height + 50);
+    startButton.mousePressed(startCounting);
+
+    // 创建停止计数按钮
+    stopButton = createButton("Stop Counting");
+    stopButton.position(10, video.height + 100);
+    stopButton.mousePressed(stopCounting);
 }
+
 
 // 切换前后摄像头
 function switchCamera() {
@@ -54,6 +74,29 @@ function switchCamera() {
         poseNet.on("pose", gotPoses);
     });
 }
+
+function startCounting() {
+    // 设置计时器开始标志为true
+    timerStarted = true;
+    // 设置计时器为0
+    timer = 0;
+    // 设置计数器为0
+    pullUpCounter = 0;
+    // 禁用开始计数按钮
+    startButton.attribute("disabled", "");
+    // 启用停止计数按钮
+    stopButton.removeAttribute("disabled");
+}
+
+function stopCounting() {
+    // 设置计时器开始标志为false
+    timerStarted = false;
+    // 禁用停止计数按钮
+    stopButton.attribute("disabled", "");
+    // 启用开始计数按钮
+    startButton.removeAttribute("disabled");
+}
+
 
 function gotPoses(poses) {
     // console.log(poses);
@@ -81,7 +124,32 @@ function draw() {
     // image(video, (width - video.width) / 2, 0);
     image(video, 0, 0);
 
+    // 如果计时器开始，则计时器加1
+    if (timerStarted) {
+        timer++;
+        // 如果检测到人体姿势
+        if (pose) {
+            // 计算左右肩之间的距离
+            let distance = calculateDistance(pose.keypoints[5], pose.keypoints[6]);
+            distance = min(distance, 16);
+            // console.log(distance);
 
+            // 绘制关键点
+            drawKeypoints(distance);
+            // 绘制骨架
+            drawSkeleton();
+            drawLineBetweenHands();
+            // 更新引体向上计数器
+            updatePullUpCounter();
+        }
+    } else {
+        textSize(30);
+        fill(255, 0, 0);
+        // 将画布的坐标系恢复到正常状态
+        // scale(-1, 1);
+        // text("Pull Ups: " + pullUpCounter, -video.width + 10, 30);
+        text("Pull Ups: " + pullUpCounter, 0, 30);
+    }
 
 
     // // 计算视频的缩放比例
@@ -97,21 +165,7 @@ function draw() {
     // // 在画布上绘制视频
     // image(video, x, y, scaledWidth, scaledHeight);
 
-    // 如果检测到人体姿势
-    if (pose) {
-        // 计算左右肩之间的距离
-        let distance = calculateDistance(pose.keypoints[5], pose.keypoints[6]);
-        distance = min(distance, 16);
-        // console.log(distance);
 
-        // 绘制关键点
-        drawKeypoints(distance);
-        // 绘制骨架
-        drawSkeleton();
-        drawLineBetweenHands();
-        // 更新引体向上计数器
-        updatePullUpCounter();
-    }
 }
 
 function drawKeypoints(distance) {
