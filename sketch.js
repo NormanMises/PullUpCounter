@@ -1,19 +1,13 @@
 let video;
 let poseNet;
-let pose;
-let skeleton;
+let pose, skeleton;
 let pullUpCounter = 0;
 let pullUpDone = false;
-let facingMode = "user"; // 默认使用前置摄像头
-let switchButton;
-// 添加开始计数按钮
+let facingMode = "environment"; // 默认使用后置摄像头
+// let switchButton;
 let startButton;
-// 添加停止计数按钮
 let stopButton;
-// 添加计时器
-let timer = 0;
-// 添加计时器是否开始的标志
-let timerStarted = false;
+let pullUpStarted = false;
 
 function setup() {
     video = createCapture({
@@ -29,8 +23,8 @@ function setup() {
         // 设置画布大小为视频的宽度和高度
         createCanvas(videoWidth, videoHeight);
         // createCanvas(windowWidth, windowHeight);
-        console.log('+++++++', windowWidth, windowHeight);
-        console.log('-------', videoWidth, videoHeight);
+        console.log('window: ', windowWidth, windowHeight);
+        console.log('video: ', videoWidth, videoHeight);
         video.hide();
 
         poseNet = ml5.poseNet(video, modelLoad);
@@ -38,48 +32,62 @@ function setup() {
     });
 
     // 创建切换摄像头按钮
-    switchButton = createButton("Switch Camera");
-    switchButton.position(10, video.height);
-    switchButton.mousePressed(switchCamera);
+    // switchButton = createButton("Switch Camera");
+    // switchButton.position(10, video.height);
+    // switchButton.mousePressed(switchCamera);
 
     // 创建开始计数按钮
-    startButton = createButton("Start Counting");
-    startButton.position(10, video.height + 50);
+    startButton = createButton("Start Training");
+    startButton.position(10, video.height);
     startButton.mousePressed(startCounting);
 
     // 创建停止计数按钮
-    stopButton = createButton("Stop Counting");
-    stopButton.position(10, video.height + 100);
+    stopButton = createButton("Stop Training");
+    stopButton.position(10, video.height + 50);
     stopButton.mousePressed(stopCounting);
+
+    stopButton = createButton("Save this training");
+    stopButton.position(10, video.height + 100);
+    stopButton.mousePressed(sendData);
 }
 
+function modelLoad() {
+    console.log('poseNet ready');
+    pullUpCounter = 0;
+    document.querySelector('#status').innerHTML = '模型加载成功，可以开始训练了！';
+}
 
 // 切换前后摄像头
-function switchCamera() {
-    if (facingMode === "user") {
-        facingMode = "environment";
-    } else {
-        facingMode = "user";
+// function switchCamera() {
+//     if (facingMode === "user") {
+//         facingMode = "environment";
+//     } else {
+//         facingMode = "user";
+//     }
+
+//     // 重新加载视频捕获
+//     video = createCapture({
+//         video: {
+//             facingMode: facingMode
+//         }
+//     }, () => {
+//         video.hide();
+
+//         poseNet = ml5.poseNet(video, modelLoad);
+//         poseNet.on("pose", gotPoses);
+//     });
+// }
+
+function gotPoses(poses) {
+    // console.log(poses);
+    if (poses.length > 0) {
+        pose = poses[0].pose;
+        skeleton = poses[0].skeleton;
     }
-
-    // 重新加载视频捕获
-    video = createCapture({
-        video: {
-            facingMode: facingMode
-        }
-    }, () => {
-        video.hide();
-
-        poseNet = ml5.poseNet(video, modelLoad);
-        poseNet.on("pose", gotPoses);
-    });
 }
 
 function startCounting() {
-    // 设置计时器开始标志为true
-    timerStarted = true;
-    // 设置计时器为0
-    timer = 0;
+    pullUpStarted = true;
     // 设置计数器为0
     pullUpCounter = 0;
     // 禁用开始计数按钮
@@ -90,25 +98,15 @@ function startCounting() {
 
 function stopCounting() {
     // 设置计时器开始标志为false
-    timerStarted = false;
+    pullUpStarted = false;
     // 禁用停止计数按钮
     stopButton.attribute("disabled", "");
     // 启用开始计数按钮
     startButton.removeAttribute("disabled");
 }
 
+function sendData() {
 
-function gotPoses(poses) {
-    // console.log(poses);
-    if (poses.length > 0) {
-        pose = poses[0].pose;
-        skeleton = poses[0].skeleton;
-    }
-}
-
-function modelLoad() {
-    console.log('poseNet ready')
-    document.querySelector('#status').innerHTML = '模型加载成功！';
 }
 
 function draw() {
@@ -123,34 +121,29 @@ function draw() {
     // 在画布的上居中位置绘制视频
     // image(video, (width - video.width) / 2, 0);
     image(video, 0, 0);
+    if (pose) {
+        // 计算左右肩之间的距离
+        let distance = calculateDistance(pose.keypoints[5], pose.keypoints[6]);
+        distance = min(distance, 16);
+        // console.log(distance);
 
-    // 如果计时器开始，则计时器加1
-    if (timerStarted) {
-        timer++;
-        // 如果检测到人体姿势
-        if (pose) {
-            // 计算左右肩之间的距离
-            let distance = calculateDistance(pose.keypoints[5], pose.keypoints[6]);
-            distance = min(distance, 16);
-            // console.log(distance);
-
-            // 绘制关键点
-            drawKeypoints(distance);
-            // 绘制骨架
-            drawSkeleton();
-            drawLineBetweenHands();
-            // 更新引体向上计数器
-            updatePullUpCounter();
-        }
-    } else {
-        textSize(30);
-        fill(255, 0, 0);
-        // 将画布的坐标系恢复到正常状态
-        // scale(-1, 1);
-        // text("Pull Ups: " + pullUpCounter, -video.width + 10, 30);
-        text("Pull Ups: " + pullUpCounter, 0, 30);
+        // 绘制关键点
+        drawKeypoints(distance);
+        // 绘制骨架
+        drawSkeleton();
+        drawLineBetweenHands();
     }
 
+    if (pullUpStarted) {
+        updatePullUpCounter();
+    }
+
+    textSize(30);
+    fill(255, 0, 0);
+    // 将画布的坐标系恢复到正常状态
+    // scale(-1, 1);
+    // text("Pull Ups: " + pullUpCounter, -video.width + 10, 30);
+    text("Pull Ups: " + pullUpCounter, 0, 30);
 
     // // 计算视频的缩放比例
     // const scaleFactor = min(width / video.width, height / video.height);
@@ -242,10 +235,10 @@ function updatePullUpCounter() {
     } else if (!isPullUpDone()) {
         pullUpDone = false;
     }
-    textSize(30);
-    fill(255, 0, 0);
-    // 将画布的坐标系恢复到正常状态
-    // scale(-1, 1);
-    // text("Pull Ups: " + pullUpCounter, -video.width + 10, 30);
-    text("Pull Ups: " + pullUpCounter, 0, 30);
+    // textSize(30);
+    // fill(255, 0, 0);
+    // // 将画布的坐标系恢复到正常状态
+    // // scale(-1, 1);
+    // // text("Pull Ups: " + pullUpCounter, -video.width + 10, 30);
+    // text("Pull Ups: " + pullUpCounter, 0, 30);
 }
