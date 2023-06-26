@@ -129,14 +129,30 @@ function sendData(data) {
             if (xhr.status === 200) {
                 // 请求成功
                 console.log(xhr.responseText);
+                showSuccessMessage();
             } else {
                 // 请求失败
                 console.error("Error:", xhr.status);
+                showErrorMessage();
             }
         }
     };
     // 将数据转换为JSON字符串并发送
     xhr.send(JSON.stringify(data));
+}
+
+// 显示发送成功消息
+function showSuccessMessage() {
+    // 选择合适的方法给用户提示已发送成功
+    // 例如，可以显示一个弹框、在页面上插入一条提示消息等
+    alert("Data sent successfully!");
+}
+
+// 显示发送失败消息
+function showErrorMessage() {
+    // 选择合适的方法给用户提示发送失败
+    // 例如，可以显示一个弹框、在页面上插入一条错误消息等
+    alert("Failed to send data. Please try again.");
 }
 
 function draw() {
