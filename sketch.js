@@ -223,15 +223,32 @@ function calculateDistance(keypoint1, keypoint2) {
     return dist(keypoint1.position.x, keypoint1.position.y, keypoint2.position.x, keypoint2.position.y);
 }
 
+// 计算三个关键点所形成的角度
+function calculateAngle(pointA, pointB, pointC) {
+    const AB = calculateDistance(pointA, pointB);
+    const BC = calculateDistance(pointB, pointC);
+    const AC = calculateDistance(pointA, pointC);
+    return Math.acos((AB * AB + BC * BC - AC * AC) / (2 * AB * BC)) * 180 / Math.PI;
+}
+
 // 判断是否完成引体向上
 function isPullUpDone() {
+    // 判断 pose 对象是否存在
+    if (!pose) {
+        return false;
+    }
+
     // 获取头部、左手和右手的位置
     const head = pose.nose;
     const leftHand = pose.leftWrist;
     const rightHand = pose.rightWrist;
+    const leftElbow = pose.leftElbow;
+    const rightElbow = pose.rightElbow;
+    const leftShoulder = pose.leftShoulder;
+    const rightShoulder = pose.rightShoulder;
 
     // 判断头部、左手和右手的位置是否存在
-    if (head.confidence > 0.5 && leftHand.confidence > 0.5 && rightHand.confidence > 0.5) {
+    if (head && leftHand && rightHand && leftElbow && rightElbow && leftShoulder && rightShoulder && head.confidence > 0.5 && leftHand.confidence > 0.5 && rightHand.confidence > 0.5) {
         // 计算两手连线的斜率和截距
         const slope = (rightHand.y - leftHand.y) / (rightHand.x - leftHand.x);
         const intercept = leftHand.y - slope * leftHand.x;
@@ -239,8 +256,12 @@ function isPullUpDone() {
         // 计算头部在两手连线上的y坐标
         const headYOnLine = slope * head.x + intercept;
 
+        // 计算肩、肘、腕三点所形成的角
+        const leftAngle = calculateAngle(leftShoulder, leftElbow, leftHand);
+        const rightAngle = calculateAngle(rightShoulder, rightElbow, rightHand);
+
         // 判断头部是否在两手连线上方且距离两手连线的距离大于0
-        if (head.y < headYOnLine) {
+        if (head.y < headYOnLine && leftAngle < 90 && rightAngle < 90 && leftElbow.y < leftShoulder.y && rightElbow.y < rightShoulder.y) {
             return true; // 引体向上完成
         }
     }
