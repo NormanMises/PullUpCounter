@@ -31,10 +31,6 @@ function setup() {
         poseNet.on('pose', gotPoses);
     });
 
-    // 创建切换摄像头按钮
-    // switchButton = createButton("Switch Camera");
-    // switchButton.position(10, video.height);
-    // switchButton.mousePressed(switchCamera);
 
     // 创建开始计数按钮
     startButton = createButton("Start Training");
@@ -48,14 +44,7 @@ function setup() {
 
     stopButton = createButton("Save this training");
     stopButton.position(10, video.height + 100);
-    stopButton.mousePressed(() => {
-        // 创建一个包含pullUpCounter的数据对象
-        const data = {
-            pullUpCounter: pullUpCounter
-        };
-        // 调用sendData函数发送数据到后端
-        sendData(data);
-    });
+    stopButton.mousePressed(sendData);
 }
 
 function modelLoad() {
@@ -113,7 +102,7 @@ function stopCounting() {
 }
 
 // 将数据作为JSON发送到后端
-function sendData(data) {
+function sendData() {
     // 创建一个XMLHttpRequest对象
     const xhr = new XMLHttpRequest();
 
@@ -138,7 +127,9 @@ function sendData(data) {
         }
     };
     // 将数据转换为JSON字符串并发送
-    xhr.send(JSON.stringify(data));
+    xhr.send(JSON.stringify({
+        pullUpCounter: pullUpCounter
+    }));
 }
 
 // 显示发送成功消息
