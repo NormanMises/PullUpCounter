@@ -63,7 +63,7 @@ function modelLoad() {
 
 
 function gotPoses(poses) {
-    // console.log(poses);
+    console.log(poses);
     if (poses.length > 0) {
         pose = poses[0].pose;
         skeleton = poses[0].skeleton;
@@ -146,7 +146,7 @@ function draw() {
     image(video, 0, 0);
     if (pose) {
         // 计算左右肩之间的距离
-        let distance = calculateDistance(pose.keypoints[5], pose.keypoints[6]);
+        let distance = calculateKeypointDistance(pose.keypoints[5], pose.keypoints[6]);
         distance = min(distance, 16);
         // console.log(distance);
 
@@ -219,8 +219,12 @@ function drawLineBetweenHands() {
 
 
 // 计算两个关键点之间的距离
-function calculateDistance(keypoint1, keypoint2) {
+function calculateKeypointDistance(keypoint1, keypoint2) {
     return dist(keypoint1.position.x, keypoint1.position.y, keypoint2.position.x, keypoint2.position.y);
+}
+
+function calculateDistance(keypoint1, keypoint2) {
+    return dist(keypoint1.x, keypoint1.y, keypoint2.x, keypoint2.y);
 }
 
 // 计算三个关键点所形成的角度
