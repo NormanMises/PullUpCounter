@@ -61,26 +61,6 @@ function modelLoad() {
     document.querySelector('#status').innerHTML = '模型加载成功，可以开始训练了！';
 }
 
-// 切换前后摄像头
-// function switchCamera() {
-//     if (facingMode === "user") {
-//         facingMode = "environment";
-//     } else {
-//         facingMode = "user";
-//     }
-
-//     // 重新加载视频捕获
-//     video = createCapture({
-//         video: {
-//             facingMode: facingMode
-//         }
-//     }, () => {
-//         video.hide();
-
-//         poseNet = ml5.poseNet(video, modelLoad);
-//         poseNet.on("pose", gotPoses);
-//     });
-// }
 
 function gotPoses(poses) {
     // console.log(poses);
@@ -258,15 +238,12 @@ function isPullUpDone() {
 
         // 计算头部在两手连线上的y坐标
         const headYOnLine = slope * head.x + intercept;
-        // console.log(head.y, headYOnLine)
 
         // 判断头部是否在两手连线上方且距离两手连线的距离大于0
         if (head.y < headYOnLine) {
-            // console.log('+++++++++++', head.y, headYOnLine)
             return true; // 引体向上完成
         }
     }
-
     return false; // 未满足引体向上完成的条件
 }
 
@@ -278,10 +255,4 @@ function updatePullUpCounter() {
     } else if (!isPullUpDone()) {
         pullUpDone = false;
     }
-    // textSize(30);
-    // fill(255, 0, 0);
-    // // 将画布的坐标系恢复到正常状态
-    // // scale(-1, 1);
-    // // text("Pull Ups: " + pullUpCounter, -video.width + 10, 30);
-    // text("Pull Ups: " + pullUpCounter, 0, 30);
 }
