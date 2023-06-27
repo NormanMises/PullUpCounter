@@ -265,7 +265,7 @@ function isPullUpDone() {
         const rightAngle = calculateAngle(rightShoulder, rightElbow, rightHand);
 
         // 判断头部是否在两手连线上方且距离两手连线的距离大于0
-        if (head.y < headYOnLine && leftAngle < 90 && rightAngle < 90 && leftElbow.y < leftShoulder.y && rightElbow.y < rightShoulder.y) {
+        if (head.y < headYOnLine && leftElbow.y > leftShoulder.y && rightElbow.y > rightShoulder.y) {
             return true; // 引体向上完成
         }
     }
