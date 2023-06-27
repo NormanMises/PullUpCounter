@@ -7,6 +7,7 @@ let facingMode = "environment"; // 默认使用后置摄像头
 // let switchButton;
 let startButton;
 let stopButton;
+let sendButton;
 let pullUpStarted = false;
 
 function setup() {
@@ -42,9 +43,16 @@ function setup() {
     stopButton.position(10, video.height + 50);
     stopButton.mousePressed(stopCounting);
 
-    stopButton = createButton("Save this training");
-    stopButton.position(10, video.height + 100);
-    stopButton.mousePressed(sendData);
+    sendButton = createButton("Save this training");
+    sendButton.position(10, video.height + 100);
+    sendButton.mousePressed(() => {
+        // 创建一个包含pullUpCounter的数据对象
+        const data = {
+            pullUpCounter: pullUpCounter
+        };
+        // 调用sendData函数发送数据到后端
+        sendData(data);
+    });
 }
 
 function modelLoad() {
@@ -102,7 +110,7 @@ function stopCounting() {
 }
 
 // 将数据作为JSON发送到后端
-function sendData() {
+function sendData(data) {
     // 创建一个XMLHttpRequest对象
     const xhr = new XMLHttpRequest();
 
@@ -127,9 +135,7 @@ function sendData() {
         }
     };
     // 将数据转换为JSON字符串并发送
-    xhr.send(JSON.stringify({
-        pullUpCounter: pullUpCounter
-    }));
+    xhr.send(JSON.stringify(data));
 }
 
 // 显示发送成功消息
