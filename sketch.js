@@ -11,26 +11,18 @@ let sendButton;
 let pullUpStarted = false;
 
 function setup() {
+    createCanvas(640, 480);
     video = createCapture({
         video: {
             facingMode: facingMode
         }
-
-    }, () => {
-        // 在视频加载后获取视频的宽度和高度
-        const videoWidth = video.width;
-        const videoHeight = video.height;
-
-        // 设置画布大小为视频的宽度和高度
-        createCanvas(videoWidth, videoHeight);
-        // createCanvas(windowWidth, windowHeight);
-        console.log('window: ', windowWidth, windowHeight);
-        console.log('video: ', videoWidth, videoHeight);
-        video.hide();
-
-        poseNet = ml5.poseNet(video, modelLoad);
-        poseNet.on('pose', gotPoses);
     });
+    video.hide();
+
+    poseNet = ml5.poseNet(video, modelLoad);
+    poseNet.on('pose', gotPoses);
+    // console.log('window: ', windowWidth, windowHeight);
+    // console.log('video: ', videoWidth, videoHeight);
 
 
     // 创建开始计数按钮
