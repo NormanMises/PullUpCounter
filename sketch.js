@@ -1,4 +1,36 @@
-import DistanceCalculatorFactory from './factory.js';
+// import {DistanceCalculatorFactory} from '/factory.js';
+
+// 创建距离计算工厂
+class DistanceCalculatorFactory {
+    // 创建计算关键点距离的方法
+    static createKeypointDistanceCalculator() {
+        return new KeypointDistanceCalculator();
+    }
+
+    // 创建计算一般距离的方法
+    static createDistanceCalculator() {
+        return new DistanceCalculator();
+    }
+}
+
+// 关键点距离计算器类
+class KeypointDistanceCalculator {
+    calculate(keypoint1, keypoint2) {
+        return dist(
+            keypoint1.position.x,
+            keypoint1.position.y,
+            keypoint2.position.x,
+            keypoint2.position.y
+        );
+    }
+}
+
+// 一般距离计算器类
+class DistanceCalculator {
+    calculate(point1, point2) {
+        return dist(point1.x, point1.y, point2.x, point2.y);
+    }
+}
 
 let video;
 let poseNet;
@@ -259,8 +291,8 @@ function isPullUpDone() {
         const headYOnLine = slope * head.x + intercept;
 
         // 计算肩、肘、腕三点所形成的角
-        const leftAngle = calculateAngle(leftShoulder, leftElbow, leftHand);
-        const rightAngle = calculateAngle(rightShoulder, rightElbow, rightHand);
+        // const leftAngle = calculateAngle(leftShoulder, leftElbow, leftHand);
+        // const rightAngle = calculateAngle(rightShoulder, rightElbow, rightHand);
 
         // 判断头部是否在两手连线上方且距离两手连线的距离大于0
         if (head.y < headYOnLine && leftElbow.y > leftShoulder.y && rightElbow.y > rightShoulder.y) {

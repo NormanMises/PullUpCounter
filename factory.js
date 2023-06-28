@@ -29,7 +29,7 @@ class DistanceCalculator {
         return dist(point1.x, point1.y, point2.x, point2.y);
     }
 }
-
+export { DistanceCalculatorFactory };
 // 使用示例
 const keypoint1 = { position: { x: 0, y: 0 } };
 const keypoint2 = { position: { x: 3, y: 4 } };
