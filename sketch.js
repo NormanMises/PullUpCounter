@@ -109,16 +109,19 @@ function setup() {
 
 
     // 创建开始计数按钮
-    startButton = createButton("Start Training");
+    startButton = createButton("开始训练");
+    startButton.elt.className = "btn btn-primary";
     startButton.position(10, video.height);
     startButton.mousePressed(startCounting);
 
     // 创建停止计数按钮
-    stopButton = createButton("Stop Training");
+    stopButton = createButton("结束训练");
+    stopButton.elt.className = "btn btn-secondary";
     stopButton.position(10, video.height + 50);
     stopButton.mousePressed(stopCounting);
 
-    sendButton = createButton("Save this training");
+    sendButton = createButton("保存训练数据");
+    sendButton.elt.className = "btn btn-info";
     sendButton.position(10, video.height + 100);
     sendButton.mousePressed(() => {
         // 创建一个包含pullUpCounter的数据对象
