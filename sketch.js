@@ -1,3 +1,5 @@
+import DistanceCalculatorFactory from './factory.js';
+
 let video;
 let poseNet;
 let pose, skeleton;
@@ -9,6 +11,9 @@ let startButton;
 let stopButton;
 let sendButton;
 let pullUpStarted = false;
+
+let keypointDistanceCalculator = DistanceCalculatorFactory.createKeypointDistanceCalculator();
+let distanceCalculator = DistanceCalculatorFactory.createDistanceCalculator();
 
 function setup() {
     createCanvas(640, 480);
@@ -138,7 +143,8 @@ function draw() {
     image(video, 0, 0);
     if (pose) {
         // 计算左右肩之间的距离
-        let distance = calculateKeypointDistance(pose.keypoints[5], pose.keypoints[6]);
+        // let distance = calculateKeypointDistance(pose.keypoints[5], pose.keypoints[6]);
+        let distance = keypointDistanceCalculator.calculate(pose.keypoints[5], pose.keypoints[6]);
         distance = min(distance, 16);
         // console.log(distance);
 
@@ -221,9 +227,9 @@ function calculateDistance(keypoint1, keypoint2) {
 
 // 计算三个关键点所形成的角度
 function calculateAngle(pointA, pointB, pointC) {
-    const AB = calculateDistance(pointA, pointB);
-    const BC = calculateDistance(pointB, pointC);
-    const AC = calculateDistance(pointA, pointC);
+    const AB = distanceCalculator.calculate(pointA, pointB);
+    const BC = distanceCalculator.calculate(pointB, pointC);
+    const AC = distanceCalculator.calculate(pointA, pointC);
     return Math.acos((AB * AB + BC * BC - AC * AC) / (2 * AB * BC)) * 180 / Math.PI;
 }
 
