@@ -1,5 +1,3 @@
-// import {DistanceCalculatorFactory} from '/factory.js';
-
 // 创建距离计算工厂
 class DistanceCalculatorFactory {
     // 创建计算关键点距离的方法
@@ -32,6 +30,49 @@ class DistanceCalculator {
     }
 }
 
+
+class MessageNotifier {
+    constructor() {
+        this.observers = [];
+    }
+
+    addObserver(observer) {
+        this.observers.push(observer);
+        // console.log(this.observers);
+    }
+
+    removeObserver(observer) {
+        this.observers = this.observers.filter((obs) => obs !== observer);
+    }
+
+    notifySuccess() {
+        this.observers.forEach((observer) => observer.showSuccessMessage());
+    }
+
+    notifyError() {
+        this.observers.forEach((observer) => observer.showErrorMessage());
+    }
+}
+
+// 观察者对象
+const successObserver = {
+    showSuccessMessage() {
+        alert("Data sent successfully!");
+    },
+    showErrorMessage() {
+        // 空方法或其他处理逻辑
+    }
+};
+
+const errorObserver = {
+    showSuccessMessage() {
+        // 空方法或其他处理逻辑
+    },
+    showErrorMessage() {
+        alert("Failed to send data. Please try again.");
+    }
+};
+
 let video;
 let poseNet;
 let pose, skeleton;
@@ -47,6 +88,10 @@ let pullUpStarted = false;
 let keypointDistanceCalculator = DistanceCalculatorFactory.createKeypointDistanceCalculator();
 let distanceCalculator = DistanceCalculatorFactory.createDistanceCalculator();
 
+// 创建主题对象
+let messageNotifier = new MessageNotifier();
+
+
 function setup() {
     createCanvas(640, 480);
     video = createCapture({
@@ -58,6 +103,7 @@ function setup() {
 
     poseNet = ml5.poseNet(video, modelLoad);
     poseNet.on('pose', gotPoses);
+
     // console.log('window: ', windowWidth, windowHeight);
     // console.log('video: ', videoWidth, videoHeight);
 
@@ -82,6 +128,9 @@ function setup() {
         // 调用sendData函数发送数据到后端
         sendData(data);
     });
+    // 添加观察者
+    messageNotifier.addObserver(successObserver);
+    messageNotifier.addObserver(errorObserver);
 }
 
 function modelLoad() {
@@ -135,11 +184,11 @@ function sendData(data) {
             if (xhr.status === 200) {
                 // 请求成功
                 console.log(xhr.responseText);
-                showSuccessMessage();
+                showSuccessMsg();
             } else {
                 // 请求失败
                 console.error("Error:", xhr.status);
-                showErrorMessage();
+                showErrorMsg();
             }
         }
     };
@@ -148,17 +197,13 @@ function sendData(data) {
 }
 
 // 显示发送成功消息
-function showSuccessMessage() {
-    // 选择合适的方法给用户提示已发送成功
-    // 例如，可以显示一个弹框、在页面上插入一条提示消息等
-    alert("Data sent successfully!");
+function showSuccessMsg() {
+    messageNotifier.notifySuccess();
 }
 
 // 显示发送失败消息
-function showErrorMessage() {
-    // 选择合适的方法给用户提示发送失败
-    // 例如，可以显示一个弹框、在页面上插入一条错误消息等
-    alert("Failed to send data. Please try again.");
+function showErrorMsg() {
+    messageNotifier.notifyError();
 }
 
 function draw() {
