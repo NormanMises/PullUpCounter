@@ -11,6 +11,7 @@ describe('calculateKeypointDistance', () => {
         // 调用被测试的函数
         const distance = calculateKeypointDistance(keypoint1, keypoint2);
 
+
         // 断言期望的结果
         expect(distance).toBe(5); // 假设期望的距离为5
     });
