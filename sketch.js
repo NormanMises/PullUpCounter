@@ -52,25 +52,23 @@ class MessageNotifier {
     notifyError() {
         this.observers.forEach((observer) => observer.showErrorMessage());
     }
+
+    notifyZero() {
+        this.observers.forEach((observer) => observer.showZeroMessage());
+    }
 }
 
 // 观察者对象
-const successObserver = {
+const msgObserver = {
     showSuccessMessage() {
-        alert("Data sent successfully!");
+        alert("数据保存成功！");// 空方法或其他处理逻辑
     },
     showErrorMessage() {
-        // 空方法或其他处理逻辑
-    }
-};
-
-const errorObserver = {
-    showSuccessMessage() {
-        // 空方法或其他处理逻辑
+        alert("数据保存失败，请重试。");
     },
-    showErrorMessage() {
-        alert("Failed to send data. Please try again.");
-    }
+    showZeroMessage() {
+        alert("无法保存空数据！");
+    },
 };
 
 let video;
@@ -124,16 +122,20 @@ function setup() {
     sendButton.elt.className = "btn btn-info";
     sendButton.position(10, video.height + 100);
     sendButton.mousePressed(() => {
-        // 创建一个包含pullUpCounter的数据对象
-        const data = {
-            pullUpCounter: pullUpCounter
-        };
-        // 调用sendData函数发送数据到后端
-        sendData(data);
+        if (pullUpCounter > 0) {
+            // 创建一个包含pullUpCounter的数据对象
+            const data = {
+                pullUpCounter: pullUpCounter
+            };
+            // 调用sendData函数发送数据到后端
+
+            sendData(data);
+        } else {
+            showZeroMsg();
+        }
     });
     // 添加观察者
-    messageNotifier.addObserver(successObserver);
-    messageNotifier.addObserver(errorObserver);
+    messageNotifier.addObserver(msgObserver);
 }
 
 function modelLoad() {
@@ -207,6 +209,10 @@ function showSuccessMsg() {
 // 显示发送失败消息
 function showErrorMsg() {
     messageNotifier.notifyError();
+}
+
+function showZeroMsg() {
+    messageNotifier.notifyZero();
 }
 
 function draw() {
