@@ -310,7 +310,6 @@ function calculateKeypointDistance(keypoint1, keypoint2) {
 function calculateDistance(keypoint1, keypoint2) {
     return dist(keypoint1.x, keypoint1.y, keypoint2.x, keypoint2.y);
 }
-
 // 计算三个关键点所形成的角度
 function calculateAngle(pointA, pointB, pointC) {
     const AB = distanceCalculator.calculate(pointA, pointB);
