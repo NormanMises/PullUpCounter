@@ -1,8 +1,8 @@
 {
   "scripts": {
-    "test": "jest"
+    "test": "ava --verbose"
   },
   "devDependencies": {
-    "@jest/globals": "^29.5.0"
+    "ava": "^5.3.1"
   }
 }
