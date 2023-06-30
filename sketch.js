@@ -52,25 +52,23 @@ class MessageNotifier {
     notifyError() {
         this.observers.forEach((observer) => observer.showErrorMessage());
     }
+
+    notifyZero() {
+        this.observers.forEach((observer) => observer.showZeroMessage());
+    }
 }
 
 // 观察者对象
-const successObserver = {
+const msgObserver = {
     showSuccessMessage() {
-        alert("Data sent successfully!");
+        alert("数据保存成功！");// 空方法或其他处理逻辑
     },
     showErrorMessage() {
-        // 空方法或其他处理逻辑
-    }
-};
-
-const errorObserver = {
-    showSuccessMessage() {
-        // 空方法或其他处理逻辑
+        alert("数据保存失败，请重试。");
     },
-    showErrorMessage() {
-        alert("Failed to send data. Please try again.");
-    }
+    showZeroMessage() {
+        alert("无法保存空数据！");
+    },
 };
 
 let video;
@@ -109,28 +107,35 @@ function setup() {
 
 
     // 创建开始计数按钮
-    startButton = createButton("Start Training");
+    startButton = createButton("开始训练");
+    startButton.elt.className = "btn btn-primary";
     startButton.position(10, video.height);
     startButton.mousePressed(startCounting);
 
     // 创建停止计数按钮
-    stopButton = createButton("Stop Training");
+    stopButton = createButton("结束训练");
+    stopButton.elt.className = "btn btn-secondary";
     stopButton.position(10, video.height + 50);
     stopButton.mousePressed(stopCounting);
 
-    sendButton = createButton("Save this training");
+    sendButton = createButton("保存训练数据");
+    sendButton.elt.className = "btn btn-info";
     sendButton.position(10, video.height + 100);
     sendButton.mousePressed(() => {
-        // 创建一个包含pullUpCounter的数据对象
-        const data = {
-            pullUpCounter: pullUpCounter
-        };
-        // 调用sendData函数发送数据到后端
-        sendData(data);
+        if (pullUpCounter > 0) {
+            // 创建一个包含pullUpCounter的数据对象
+            const data = {
+                pullUpCounter: pullUpCounter
+            };
+            // 调用sendData函数发送数据到后端
+
+            sendData(data);
+        } else {
+            showZeroMsg();
+        }
     });
     // 添加观察者
-    messageNotifier.addObserver(successObserver);
-    messageNotifier.addObserver(errorObserver);
+    messageNotifier.addObserver(msgObserver);
 }
 
 function modelLoad() {
@@ -204,6 +209,10 @@ function showSuccessMsg() {
 // 显示发送失败消息
 function showErrorMsg() {
     messageNotifier.notifyError();
+}
+
+function showZeroMsg() {
+    messageNotifier.notifyZero();
 }
 
 function draw() {
@@ -356,3 +365,4 @@ function updatePullUpCounter() {
         pullUpDone = false;
     }
 }
+
